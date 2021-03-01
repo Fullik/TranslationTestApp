@@ -13,6 +13,8 @@ interface TranslationView : MvpView {
     fun showWordEmptyError()
     @OneExecution
     fun showSearchError()
+    @OneExecution
+    fun showFavoriteStateChangeError()
     @AddToEndSingle
     fun setupSpinners(availableLanguages: List<AvailableLanguagesModel>)
     @AddToEndSingle

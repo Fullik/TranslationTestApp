@@ -27,7 +27,9 @@ data class TranslationEntity(
     @ColumnInfo(name = COLUMN_TRANSLATED_TO)
     val translatedTo: String,
     @ColumnInfo(name = COLUMN_TIMESTAMP)
-    val timestamp: Long
+    val timestamp: Long,
+    @ColumnInfo(name = COLUMN_IS_FAVORITE)
+    val isFavorite: Boolean
 ) {
     companion object {
         const val TABLE_NAME = "translation"
@@ -37,5 +39,6 @@ data class TranslationEntity(
         const val COLUMN_TRANSLATED_FROM = "translated_from"
         const val COLUMN_TRANSLATED_TO = "translated_to"
         const val COLUMN_TIMESTAMP = "timestamp"
+        const val COLUMN_IS_FAVORITE = "is_favorite"
     }
 }

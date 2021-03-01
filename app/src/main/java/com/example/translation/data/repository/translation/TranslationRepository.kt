@@ -27,8 +27,18 @@ class TranslationRepository(
         )
     }
 
-    fun observeTranslationChanges(): Flowable<List<TranslationEntity>> {
+    fun getAllTranslations(): Single<List<TranslationEntity>> {
         return translationDao.getAllTranslations()
+            .subscribeOn(databaseScheduler)
+    }
+
+    fun observeTranslationChanges(): Flowable<List<TranslationEntity>> {
+        return translationDao.observeAllTranslations()
+            .subscribeOn(databaseScheduler)
+    }
+
+    fun getAllFavoriteTranslations(): Single<List<TranslationEntity>> {
+        return translationDao.getAllFavoriteTranslations()
             .subscribeOn(databaseScheduler)
     }
 
@@ -47,7 +57,8 @@ class TranslationRepository(
                         wordTranslation = translation,
                         translatedFrom = translateFrom.key,
                         translatedTo = translateTo.key,
-                        timestamp = System.currentTimeMillis()
+                        timestamp = System.currentTimeMillis(),
+                        isFavorite = false
                     )
                 )
             }
@@ -57,5 +68,14 @@ class TranslationRepository(
     fun searchWord(word: String): Single<List<TranslationEntity>> {
         return translationDao.searchWord(word)
             .subscribeOn(databaseScheduler)
+    }
+
+    fun changeTranslationFavoriteState(id: Long, favoriteState: Boolean): Completable {
+        return translationDao.updateFavoriteState(id, favoriteState.toInt())
+            .subscribeOn(databaseScheduler)
+    }
+
+    private fun Boolean.toInt(): Int {
+        return if (this) 1 else 0
     }
 }

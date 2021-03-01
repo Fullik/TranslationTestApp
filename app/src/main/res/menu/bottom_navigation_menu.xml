@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_translation"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_g_translate_24"
+        android:title="@string/navigation_bar_translate_title"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_favorites"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_star_24"
+        android:title="@string/navigation_bar_favorite_title"
+        app:showAsAction="ifRoom" />
+</menu>

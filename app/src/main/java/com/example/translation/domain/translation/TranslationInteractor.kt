@@ -50,7 +50,11 @@ class TranslationInteractor(
             .toSortedList { o1, o2 -> o2.timestamp.compareTo(o1.timestamp) }
 
     fun searchWord(word: String): Single<List<RecentTranslationModel>> {
-        return repository.searchWord(word)
+        return (if (word.isEmpty()) repository.getAllTranslations() else repository.searchWord(word))
             .flatMap { mapEntities(it) }
+    }
+
+    fun changeFavoriteState(model: RecentTranslationModel): Completable {
+        return repository.changeTranslationFavoriteState(model.id, !model.isFavorite)
     }
 }

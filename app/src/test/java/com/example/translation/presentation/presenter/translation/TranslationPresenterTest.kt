@@ -10,9 +10,11 @@ import com.github.terrakok.cicerone.Router
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.plugins.RxAndroidPlugins
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.internal.schedulers.TrampolineScheduler
+import io.reactivex.plugins.RxJavaPlugins
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException
@@ -32,8 +34,12 @@ class TranslationPresenterTest {
         presenter = TranslationPresenter(interactor, router)
         presenter.setViewState(viewState)
         RxAndroidPlugins.reset()
-        RxAndroidPlugins.setMainThreadSchedulerHandler { Schedulers.trampoline() }
-        RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
+        RxJavaPlugins.reset()
+        val trampoline = TrampolineScheduler.instance()
+        RxJavaPlugins.setComputationSchedulerHandler { trampoline }
+        RxJavaPlugins.setInitComputationSchedulerHandler { trampoline }
+        RxAndroidPlugins.setMainThreadSchedulerHandler { trampoline }
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler { trampoline }
     }
 
     @Test
@@ -99,12 +105,6 @@ class TranslationPresenterTest {
     }
 
     @Test
-    fun `do not search empty word`() {
-        presenter.search("")
-        verify(interactor, never()).searchWord(any())
-    }
-
-    @Test
     fun `search word succeeded`() {
         val recentTranslations = getRecentTranslations()
         whenever(interactor.searchWord("originalWord"))
@@ -127,18 +127,56 @@ class TranslationPresenterTest {
         verify(viewState).showSearchError()
     }
 
+    @Test
+    fun `search via input changes success`() {
+        val inputSource = Observable.just<CharSequence>("", "s", "so", "som", "some")
+
+        val emptyList = emptyList<RecentTranslationModel>()
+        val recentTranslations = getRecentTranslations()
+        whenever(interactor.searchWord(any()))
+            .thenReturn(Single.just(emptyList))
+        whenever(interactor.searchWord("some"))
+            .thenReturn(Single.just(recentTranslations))
+
+        presenter.startObserveSearchInputChanges(inputSource)
+
+        verify(viewState, never()).showSearchError()
+        verify(interactor, never()).searchWord("")
+        verify(viewState, times(3)).showRecentTranslations(emptyList)
+        verify(viewState).showRecentTranslations(recentTranslations)
+    }
+
+    @Test
+    fun `error while searching word via input changes`() {
+        val inputSource = Observable.just<CharSequence>("", "s", "so", "som", "some")
+
+        val emptyList = emptyList<RecentTranslationModel>()
+        whenever(interactor.searchWord(any()))
+            .thenReturn(Single.just(emptyList))
+        whenever(interactor.searchWord("some"))
+            .thenReturn(Single.error(IOException()))
+
+        presenter.startObserveSearchInputChanges(inputSource)
+
+        verify(viewState).showSearchError()
+        verify(interactor, never()).searchWord("")
+        verify(viewState, times(3)).showRecentTranslations(emptyList)
+    }
+
     private fun getRecentTranslations() = listOf(
         RecentTranslationModel(
             1,
             "originalWord1",
             "translationWord1",
-            11
+            11,
+            false
         ),
         RecentTranslationModel(
             2,
             "originalWord2",
             "translationWord2",
-            12
+            12,
+            false
         )
     )
 }

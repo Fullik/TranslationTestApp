@@ -8,13 +8,18 @@ import com.example.translation.presentation.Screens
 import com.example.translation.presentation.view.common.BackButtonListener
 import com.github.terrakok.cicerone.NavigatorHolder
 import com.github.terrakok.cicerone.Replace
+import com.github.terrakok.cicerone.Router
 import com.github.terrakok.cicerone.androidx.AppNavigator
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var navigatorHolder: NavigatorHolder
+
+    @Inject
+    lateinit var router: Router
 
     private val navigator: AppNavigator = AppNavigator(this, R.id.fragment_container)
 
@@ -26,6 +31,18 @@ class MainActivity : AppCompatActivity() {
             navigator.applyCommands(
                 arrayOf(Replace(Screens.translation()))
             )
+        }
+        val navigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
+        navigationView.setOnNavigationItemSelectedListener {
+            if (navigationView.selectedItemId != it.itemId) {
+                when (it.itemId) {
+                    R.id.action_translation -> router.newRootScreen(Screens.translation())
+                    R.id.action_favorites -> router.newRootScreen(Screens.favorites())
+                }
+                true
+            } else {
+                false
+            }
         }
     }
 

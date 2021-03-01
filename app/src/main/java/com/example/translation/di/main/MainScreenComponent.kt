@@ -1,5 +1,6 @@
 package com.example.translation.di.main
 
+import com.example.translation.di.favorites.FavoritesFragmentComponent
 import com.example.translation.di.translation.TranslationFragmentComponent
 import com.example.translation.presentation.view.root.MainActivity
 import dagger.Subcomponent
@@ -15,6 +16,8 @@ interface MainScreenComponent {
     }
 
     fun translationFragmentComponent(): TranslationFragmentComponent.Builder
+
+    fun favoritesFragmentComponent(): FavoritesFragmentComponent.Builder
 
     fun inject(mainActivity: MainActivity)
 }
