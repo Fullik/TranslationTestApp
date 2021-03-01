@@ -68,7 +68,7 @@ class TranslationRepositoryTest {
 
     @Test
     fun `observe translation changes success`() {
-        whenever(translationDao.getAllTranslations())
+        whenever(translationDao.observeAllTranslations())
             .thenReturn(Flowable.just(getEntities()))
 
         repository.observeTranslationChanges()
@@ -79,7 +79,7 @@ class TranslationRepositoryTest {
 
     @Test
     fun `observe translation changes error`() {
-        whenever(translationDao.getAllTranslations())
+        whenever(translationDao.observeAllTranslations())
             .thenReturn(Flowable.error(IOException()))
 
         repository.observeTranslationChanges()
@@ -129,7 +129,8 @@ class TranslationRepositoryTest {
                 "someTranslation",
                 "ru",
                 "en",
-                12
+                12,
+                false
             )
         )
 

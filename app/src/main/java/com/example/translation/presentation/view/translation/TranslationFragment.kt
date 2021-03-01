@@ -13,6 +13,7 @@ import com.example.translation.domain.model.RecentTranslationModel
 import com.example.translation.presentation.presenter.translation.TranslationPresenter
 import com.example.translation.presentation.showToast
 import com.example.translation.presentation.view.common.BackButtonListener
+import com.jakewharton.rxbinding3.widget.textChanges
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import javax.inject.Inject
@@ -61,8 +62,18 @@ class TranslationFragment : MvpAppCompatFragment(R.layout.fragment_translation),
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        presenter.startObserveSearchInputChanges(searchInput.textChanges())
+    }
+
+    override fun onStop() {
+        super.onStop()
+        presenter.stopObserveSearchInputChanges()
+    }
+
     private fun setupRecycler(view: View) {
-        adapter = TranslationAdapter()
+        adapter = TranslationAdapter(presenter)
         view.findViewById<RecyclerView>(R.id.recent_translation_recycler).apply {
             layoutManager = LinearLayoutManager(context)
             adapter = this@TranslationFragment.adapter
@@ -128,6 +139,10 @@ class TranslationFragment : MvpAppCompatFragment(R.layout.fragment_translation),
 
     override fun showSearchError() {
         showToast(R.string.search_error)
+    }
+
+    override fun showFavoriteStateChangeError() {
+        showToast(R.string.favorite_state_error)
     }
 
     override fun setupSpinners(availableLanguages: List<AvailableLanguagesModel>) {

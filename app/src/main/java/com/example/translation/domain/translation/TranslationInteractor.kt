@@ -21,4 +21,5 @@ interface TranslationInteractor {
 
     fun searchWord(word: String): Single<List<RecentTranslationModel>>
 
+    fun changeFavoriteState(model: RecentTranslationModel): Completable
 }
