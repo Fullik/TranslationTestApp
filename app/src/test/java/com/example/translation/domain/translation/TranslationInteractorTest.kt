@@ -166,6 +166,8 @@ class TranslationInteractorTest {
         interactor.searchWord("some")
             .test()
             .assertValue { it.checkTestValues() }
+
+        verify(repository, never()).getAllTranslations()
     }
 
     @Test
@@ -174,6 +176,56 @@ class TranslationInteractorTest {
             .thenReturn(Single.error(IOException()))
 
         interactor.searchWord("some")
+            .test()
+            .assertError(IOException::class.java)
+
+        verify(repository, never()).getAllTranslations()
+    }
+
+    @Test
+    fun `search by empty word`() {
+        whenever(repository.getAllTranslations())
+            .thenReturn(Single.just(getEntities()))
+
+        interactor.searchWord("")
+            .test()
+            .assertValue { it.checkTestValues() }
+
+        verify(repository, never()).searchWord("")
+    }
+
+    @Test
+    fun `change favorite state success`() {
+        val model = RecentTranslationModel(
+            1,
+            "originalWord",
+            "translation",
+            11,
+            false
+        )
+        whenever(repository.changeTranslationFavoriteState(model.id, true))
+            .thenReturn(Completable.complete())
+
+        interactor.changeFavoriteState(model)
+            .test()
+            .assertNoErrors()
+            .assertComplete()
+    }
+
+    @Test
+    fun `change favorite state error`() {
+        val model = RecentTranslationModel(
+            1,
+            "originalWord",
+            "translation",
+            11,
+            false
+        )
+
+        whenever(repository.changeTranslationFavoriteState(model.id, true))
+            .thenReturn(Completable.error(IOException()))
+
+        interactor.changeFavoriteState(model)
             .test()
             .assertError(IOException::class.java)
     }

@@ -3,11 +3,20 @@
     <string name="translation_error">Error while requesting translation</string>
     <string name="word_empty_error">Enter word before translation</string>
     <string name="search_error">Error while searching word</string>
+    <string name="favorite_state_error">Error while change favorite state</string>
+    <string name="favorite_fetch_error">Error while fetching favorite translations</string>
+    <string name="favorite_word_deleted">Favorite word deleted</string>
+    <string name="favorite_delete_error">Error while deleting favorite</string>
 
     <string name="translation_input_hint">Enter word to translate</string>
     <string name="translation_button">Translate</string>
     <string name="search_input_hint">Enter word to search</string>
     <string name="search_button">Search</string>
+
+    <string name="navigation_bar_translate_title">Translate</string>
+    <string name="navigation_bar_favorite_title">Favorite</string>
+
+    <string name="favorite_button">Favorite button</string>
 
     <string name="ru_translation">Russian</string>
     <string name="en_translation">English</string>

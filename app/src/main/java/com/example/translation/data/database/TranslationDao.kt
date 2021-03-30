@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.translation.data.database.entity.TranslationEntity
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 
@@ -12,7 +13,14 @@ import io.reactivex.Single
 interface TranslationDao {
 
     @Query("SELECT * FROM ${TranslationEntity.TABLE_NAME}")
-    fun getAllTranslations(): Flowable<List<TranslationEntity>>
+    fun observeAllTranslations(): Flowable<List<TranslationEntity>>
+
+    @Query("SELECT * FROM ${TranslationEntity.TABLE_NAME}")
+    fun getAllTranslations(): Single<List<TranslationEntity>>
+
+    @Query("""SELECT * FROM ${TranslationEntity.TABLE_NAME} 
+        WHERE ${TranslationEntity.COLUMN_IS_FAVORITE} = 1""")
+    fun getAllFavoriteTranslations(): Single<List<TranslationEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertTranslation(translation: TranslationEntity): Long
@@ -34,4 +42,13 @@ interface TranslationDao {
         """
     )
     fun searchWord(word: String): Single<List<TranslationEntity>>
+
+    @Query(
+        """
+            UPDATE ${TranslationEntity.TABLE_NAME} 
+            SET ${TranslationEntity.COLUMN_IS_FAVORITE} = :favoriteState
+            WHERE ${TranslationEntity.COLUMN_ID} = :id
+        """
+    )
+    fun updateFavoriteState(id: Long, favoriteState: Int): Completable
 }

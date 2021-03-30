@@ -15,7 +15,11 @@ interface TranslationRepository {
         translateTo: SupportedTranslations
     ): Single<TranslationResponse>
 
+    fun getAllTranslations(): Single<List<TranslationEntity>>
+
     fun observeTranslationChanges(): Flowable<List<TranslationEntity>>
+
+    fun getAllFavoriteTranslations(): Single<List<TranslationEntity>>
 
     fun saveTranslation(
         word: String,
@@ -25,5 +29,7 @@ interface TranslationRepository {
     ): Completable
 
     fun searchWord(word: String): Single<List<TranslationEntity>>
+
+    fun changeTranslationFavoriteState(id: Long, favoriteState: Boolean): Completable
 
 }

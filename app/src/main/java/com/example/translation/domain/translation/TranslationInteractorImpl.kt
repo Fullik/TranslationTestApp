@@ -46,8 +46,12 @@ class TranslationInteractorImpl @Inject constructor(
     }
 
     override fun searchWord(word: String): Single<List<RecentTranslationModel>> {
-        return repository.searchWord(word)
+        return (if (word.isEmpty()) repository.getAllTranslations() else repository.searchWord(word))
             .flatMap { mapEntities(it) }
+    }
+
+    override fun changeFavoriteState(model: RecentTranslationModel): Completable {
+        return repository.changeTranslationFavoriteState(model.id, !model.isFavorite)
     }
 
     private fun mapEntities(entities: List<TranslationEntity>) =

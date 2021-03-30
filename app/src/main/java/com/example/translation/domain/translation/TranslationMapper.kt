@@ -9,7 +9,8 @@ object TranslationMapper {
             entity.id,
             entity.originalWord,
             entity.wordTranslation,
-            entity.timestamp
+            entity.timestamp,
+            entity.isFavorite
         )
     }
 }

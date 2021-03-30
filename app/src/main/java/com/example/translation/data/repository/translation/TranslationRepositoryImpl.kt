@@ -29,8 +29,18 @@ class TranslationRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun observeTranslationChanges(): Flowable<List<TranslationEntity>> {
+    override fun getAllTranslations(): Single<List<TranslationEntity>> {
         return translationDao.getAllTranslations()
+            .subscribeOn(schedulerProvider.getDatabaseScheduler())
+    }
+
+    override fun observeTranslationChanges(): Flowable<List<TranslationEntity>> {
+        return translationDao.observeAllTranslations()
+            .subscribeOn(schedulerProvider.getDatabaseScheduler())
+    }
+
+    override fun getAllFavoriteTranslations(): Single<List<TranslationEntity>> {
+        return translationDao.getAllFavoriteTranslations()
             .subscribeOn(schedulerProvider.getDatabaseScheduler())
     }
 
@@ -49,7 +59,8 @@ class TranslationRepositoryImpl @Inject constructor(
                         wordTranslation = translation,
                         translatedFrom = translateFrom.key,
                         translatedTo = translateTo.key,
-                        timestamp = System.currentTimeMillis()
+                        timestamp = System.currentTimeMillis(),
+                        isFavorite = false
                     )
                 )
             }
@@ -59,6 +70,15 @@ class TranslationRepositoryImpl @Inject constructor(
     override fun searchWord(word: String): Single<List<TranslationEntity>> {
         return translationDao.searchWord(word)
             .subscribeOn(schedulerProvider.getDatabaseScheduler())
+    }
+
+    override fun changeTranslationFavoriteState(id: Long, favoriteState: Boolean): Completable {
+        return translationDao.updateFavoriteState(id, favoriteState.toInt())
+            .subscribeOn(schedulerProvider.getDatabaseScheduler())
+    }
+
+    private fun Boolean.toInt(): Int {
+        return if (this) 1 else 0
     }
 
 }

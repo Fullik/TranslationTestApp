@@ -1,9 +1,8 @@
 package com.example.translation.domain.model
 
-data class RecentTranslationModel(
+data class FavoriteTranslationModel(
     val id: Long,
     val originalWord: String,
     val translation: String,
-    val timestamp: Long,
-    val isFavorite: Boolean
+    val timestamp: Long
 )
